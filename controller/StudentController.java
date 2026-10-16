@@ -12,7 +12,7 @@ import java.util.Optional;
 @RequestMapping("/api/students")
 public class StudentController {
 
-    private StudentService studentService;
+    private final StudentService studentService;
 
     public StudentController(StudentService studentService){
         this.studentService = studentService;
@@ -61,5 +61,16 @@ public class StudentController {
         boolean isDeleted = studentService.deleteStudent(id);
 
         return isDeleted ? ResponseEntity.status(200).body("Student Deleted Successfully") : ResponseEntity.status(404).body("Student Not Exist");
+    }
+
+    @PatchMapping("delete-soft/{id}")
+    public ResponseEntity<String> deleteSoftly(@PathVariable Long id){
+
+        boolean deleted = studentService.deleteSoftly(id);
+
+        if(!deleted){
+            return ResponseEntity.status(404).body("Student Not Found!");
+        }
+        return ResponseEntity.status(200).body("Student Deleted!");
     }
 }

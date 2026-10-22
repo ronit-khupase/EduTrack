@@ -1,44 +1,52 @@
 # Student CRUD REST API
 
-A Student Management REST API developed using **Java, Spring Boot, Spring Data JPA, and PostgreSQL**. This project implements CRUD (Create, Read, Update, Delete) operations to manage student records and provides hands-on experience with REST API development and database integration.
+A RESTful Student Management API built using **Java, Spring Boot, Spring Data JPA, Hibernate, and PostgreSQL**. The application implements CRUD operations for managing student records using a layered architecture with DTOs, input validation, and database integration.
 
-## 🚀 Features
+## Features
 
-- Create a new student record.
-- Retrieve a student by ID.
-- Retrieve all student records.
-- Update existing student details.
-- Delete a student record.
-- Integrate PostgreSQL using Spring Data JPA.
-- Test REST API endpoints using Postman.
+* Create, retrieve, update, and delete student records.
+* Retrieve individual students by ID or fetch all students.
+* **DTO Layer:** Separate request and response models from database entities.
+* **Input Validation:** Validate incoming requests using Jakarta Bean Validation.
+* **Database Integration:** Persist student records using Spring Data JPA and PostgreSQL.
+* **Layered Architecture:** Separate controller, service, repository, DTO, and entity responsibilities.
+* **API Testing:** Test REST endpoints using Postman.
 
-## 🛠️ Tech Stack
+## Technologies Used
 
-- **Language:** Java
-- **Framework:** Spring Boot
-- **Database:** PostgreSQL
-- **ORM:** Spring Data JPA / Hibernate
-- **Build Tool:** Maven
-- **API Testing:** Postman
-- **IDE:** IntelliJ IDEA
+| Technology              | Purpose                                    |
+| ----------------------- | ------------------------------------------ |
+| Java                    | Backend programming                        |
+| Spring Boot             | Application development                    |
+| Spring Web              | REST API development                       |
+| Spring Data JPA         | Database access and persistence            |
+| Hibernate               | Object-relational mapping                  |
+| PostgreSQL              | Relational database                        |
+| Jakarta Bean Validation | Request validation                         |
+| Maven                   | Dependency management and build automation |
+| Postman                 | API testing                                |
+| IntelliJ IDEA           | Development environment                    |
+| Git and GitHub          | Version control                            |
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 student/
 ├── src/
 │   ├── main/
-│   │   ├── java/
-│   │   │   └── com/practice/student/
-│   │   │       ├── controller/
-│   │   │       │   └── StudentController.java
-│   │   │       ├── entity/
-│   │   │       │   └── Student.java
-│   │   │       ├── repository/
-│   │   │       │   └── StudentRepository.java
-│   │   │       ├── service/
-│   │   │       │   └── StudentService.java
-│   │   │       └── StudentApplication.java
+│   │   ├── java/com/practice/student/
+│   │   │   ├── controller/
+│   │   │   │   └── StudentController.java
+│   │   │   ├── dto/
+│   │   │   │   ├── StudentReqDto.java
+│   │   │   │   └── StudentResDto.java
+│   │   │   ├── entity/
+│   │   │   │   └── Student.java
+│   │   │   ├── repository/
+│   │   │   │   └── StudentRepository.java
+│   │   │   ├── service/
+│   │   │   │   └── StudentService.java
+│   │   │   └── StudentApplication.java
 │   │   └── resources/
 │   │       └── application.properties
 │   └── test/
@@ -48,85 +56,148 @@ student/
 └── README.md
 ```
 
-## ⚙️ Prerequisites
+### Architecture
+
+The application follows a layered architecture:
+
+* **Controller:** Handles HTTP requests and responses.
+* **DTO:** Defines request and response data structures.
+* **Entity:** Represents student records in the database.
+* **Service:** Contains business logic and coordinates operations.
+* **Repository:** Performs database operations using Spring Data JPA.
+
+**Request flow:**
+
+```text
+Client / Postman
+       |
+       v
+Student Controller
+       |
+       v
+DTO Validation
+       |
+       v
+Student Service
+       |
+       v
+Student Repository
+       |
+       v
+PostgreSQL Database
+```
+
+## Prerequisites
 
 Ensure the following are installed:
 
-- Java JDK
-- PostgreSQL
-- Maven (optional if using the Maven Wrapper)
-- Postman for API testing
+* Java JDK compatible with the project's Spring Boot version.
+* PostgreSQL.
+* Git.
+* Postman (optional, for API testing).
 
-## 🔧 Installation and Setup
+Maven is optional if you use the included Maven Wrapper.
+
+## Setup Instructions
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/ronit-khupase/Student-CRUD-Practice.git
+git clone https://github.com/ronit-khupase/EduTrack.git
 ```
 
 ### 2. Navigate to the Project Directory
 
 ```bash
-cd Student-CRUD-Practice
+cd EduTrack
 ```
 
-### 3. Configure PostgreSQL
+### 3. Create a PostgreSQL Database
 
-Create a database in PostgreSQL and configure the database connection in `src/main/resources/application.properties`.
+Execute the following SQL command in PostgreSQL:
 
-Example configuration:
+```sql
+CREATE DATABASE student_db;
+```
+
+### 4. Configure Database Connection
+
+Open `src/main/resources/application.properties` and configure the connection:
 
 ```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
-spring.datasource.username=YOUR_USERNAME
-spring.datasource.password=YOUR_PASSWORD
+spring.application.name=student
+
+spring.datasource.url=${DB_URL:jdbc:postgresql://localhost:5432/student_db}
+spring.datasource.username=${DB_USERNAME:postgres}
+spring.datasource.password=${DB_PASSWORD}
 
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 ```
 
-Replace the database name, username, and password with your actual PostgreSQL configuration.
+Set the `DB_PASSWORD` environment variable to your PostgreSQL password before starting the application.
 
-**Security note:** Do not commit database passwords or other sensitive credentials to GitHub.
+**Security:** Never commit database passwords or other sensitive credentials to GitHub.
 
-### 4. Run the Application
+The `spring.jpa.hibernate.ddl-auto=update` setting is suitable for development. Production applications should use a controlled database migration strategy.
 
-Using Maven:
+### 5. Run the Application
+
+**Windows:**
+
+```powershell
+.\mvnw.cmd spring-boot:run
+```
+
+**Linux/macOS:**
+
+```bash
+./mvnw spring-boot:run
+```
+
+Alternatively, if Maven is installed:
 
 ```bash
 mvn spring-boot:run
 ```
 
-Alternatively, on Windows, use the Maven Wrapper:
+The application will start at:
 
-```bash
-.\mvnw.cmd spring-boot:run
+```text
+http://localhost:8080
 ```
 
-The application will run at:
+**API base URL:**
 
-`http://localhost:8080`
+```text
+http://localhost:8080/api/students
+```
 
-## 📡 REST API Endpoints
+## API Endpoint Documentation
 
-**Base URL:** `http://localhost:8080/api/students`
+All endpoints use the base path `/api/students`.
 
-| HTTP Method | Endpoint | Description |
-|---|---|---|
-| POST | `/create` | Create a new student |
-| GET | `/get/{id}` | Retrieve a student by ID |
-| GET | `/get` | Retrieve all students |
-| PUT | `/update/{id}` | Update student details |
-| DELETE | `/delete/{id}` | Delete a student by ID |
+| HTTP Method | Endpoint                    | Description                |
+| ----------- | --------------------------- | -------------------------- |
+| POST        | `/api/students/create`      | Create a student           |
+| GET         | `/api/students/get/{id}`    | Retrieve a student by ID   |
+| GET         | `/api/students/get`         | Retrieve all students      |
+| PUT         | `/api/students/update/{id}` | Update an existing student |
+| DELETE      | `/api/students/delete/{id}` | Delete a student by ID     |
+| PATCH       | `/api/students/delete-soft/{id}`|Mark student as Deleted by ID  | 
 
 ### 1. Create a Student
 
-**Method:** `POST`
+Creates a new student record.
 
-**Endpoint:** `/api/students/create`
+**Request:**
 
-Request body:
+```http
+POST /api/students/create
+Content-Type: application/json
+```
+
+**Request body:**
 
 ```json
 {
@@ -137,29 +208,77 @@ Request body:
 }
 ```
 
+The request must satisfy the validation constraints defined in `StudentReqDto`.
+
 ### 2. Get a Student by ID
 
-**Method:** `GET`
+Retrieves a student using their unique ID.
 
-**Endpoint:** `/api/students/get/1`
+**Request:**
 
-Retrieves the student whose ID is `1`.
+```http
+GET /api/students/get/1
+```
+
+**Example response:**
+
+```json
+{
+  "id": 1,
+  "name": "Ronit Khupase",
+  "email": "ronit@example.com",
+  "age": 23,
+  "subject": "Spring Boot"
+}
+```
+
+The response fields depend on the implementation of `StudentResDto`.
 
 ### 3. Get All Students
 
-**Method:** `GET`
+Retrieves all student records.
 
-**Endpoint:** `/api/students/get`
+**Request:**
 
-Returns a list of all student records.
+```http
+GET /api/students/get
+```
+
+**Example response:**
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Ronit Khupase",
+    "email": "ronit@example.com",
+    "age": 23,
+    "subject": "Spring Boot"
+  },
+  {
+    "id": 2,
+    "name": "Amit Patil",
+    "email": "amit@example.com",
+    "age": 22,
+    "subject": "Java"
+  }
+]
+```
+
+The example records are illustrative; actual results depend on the database contents.
 
 ### 4. Update a Student
 
-**Method:** `PUT`
+Updates the details of an existing student.
 
-**Endpoint:** `/api/students/update/1`
+**Request:**
 
-Request body:
+```http
+PUT /api/students/update/1
+Content-Type: application/json
+```
+
+**Request body:**
 
 ```json
 {
@@ -170,49 +289,106 @@ Request body:
 }
 ```
 
+The request must satisfy the validation constraints defined in `StudentReqDto`.
+
 ### 5. Delete a Student
 
-**Method:** `DELETE`
+Deletes an existing student by ID.
 
-**Endpoint:** `/api/students/delete/1`
+**Request:**
 
-Deletes the student whose ID is `1`.
+```http
+DELETE /api/students/delete/1
+```
 
-## 🧪 API Testing
+The response status and body depend on the controller implementation.
 
-All REST API endpoints were tested using **Postman**.
+### 6. Soft-Delete a Student
 
-The tests covered creating, retrieving, updating, and deleting student records, along with verifying database changes in PostgreSQL.
+Marks Deleted to an existing student by ID.
 
-## 📚 Key Learnings
+**Request:**
 
-Through this project, I gained practical experience with:
+```http
+PATCH /api/students/delete-soft/1
+```
 
-- Developing REST APIs using Spring Boot.
-- Understanding the Controller–Service–Repository architecture.
-- Implementing CRUD operations using Spring Data JPA.
-- Connecting Spring Boot with PostgreSQL.
-- Understanding Inversion of Control (IoC) and Dependency Injection (DI).
-- Working with Spring-managed beans.
-- Testing REST endpoints using Postman.
-- Debugging application and database integration issues.
+The response status and body depend on the controller implementation.
 
-## 🎯 Project Objective
+## Input Validation
 
-This project was developed to strengthen my Java backend development skills and gain practical experience with the Spring ecosystem.
+The request DTO uses Jakarta Bean Validation to validate incoming data.
 
-It represents my first independent hands-on project exploring Spring Boot REST APIs and PostgreSQL integration.
+Common validation annotations include:
 
-## 👨‍💻 Author
+| Annotation  | Purpose                                         |
+| ----------- | ----------------------------------------------- |
+| `@NotBlank` | Rejects null, empty, or whitespace-only strings |
+| `@Email`    | Validates email format                          |
+| `@Min`      | Defines a minimum numeric value                 |
+| `@Max`      | Defines a maximum numeric value                 |
+
+The actual validation rules depend on the annotations configured in `StudentReqDto`.
+
+In the controller, validation is typically activated using `@Valid`:
+
+```java
+@Valid @RequestBody StudentReqDto studentReqDto
+```
+
+Invalid requests can return HTTP `400 Bad Request` when validation and exception handling are configured appropriately.
+
+## Testing
+
+The API can be tested using Postman.
+
+Recommended test cases:
+
+| Test Case                           | Expected Behaviour                                 |
+| ----------------------------------- | -------------------------------------------------- |
+| Create a student with valid details | Student is created                                 |
+| Submit an invalid email             | Validation error                                   |
+| Submit an invalid age               | Validation error if age constraints are configured |
+| Retrieve an existing student        | Student details are returned                       |
+| Retrieve a nonexistent student      | Appropriate not-found response                     |
+| Update an existing student          | Student details are updated                        |
+| Delete an existing student          | Student is deleted                                 |
+| Submit malformed JSON               | Request is rejected                                |
+
+Verify database changes using PostgreSQL or pgAdmin.
+
+## Key Learnings
+
+* Developing RESTful APIs using Spring Boot.
+* Implementing CRUD operations.
+* Understanding Controller–Service–Repository architecture.
+* Using DTOs to separate API contracts from database entities.
+* Applying Jakarta Bean Validation to incoming requests.
+* Integrating PostgreSQL with Spring Data JPA and Hibernate.
+* Understanding Inversion of Control (IoC) and Dependency Injection (DI).
+* Working with Spring-managed beans and repositories.
+* Testing HTTP endpoints using Postman.
+* Debugging application and database integration issues.
+
+## Future Improvements
+
+* Centralized exception handling using `@RestControllerAdvice`.
+* Consistent API response formats and HTTP status codes.
+* Unit testing using JUnit and Mockito.
+* Integration testing for REST endpoints.
+* Pagination and sorting for student records.
+* Database migrations using Flyway or Liquibase.
+* API documentation using OpenAPI and Swagger UI.
+* Authentication and authorization using Spring Security.
+* Docker support for simplified deployment.
+* Continuous integration using GitHub Actions.
+
+## Author
 
 **Ronit Khupase**
 
 GitHub: [ronit-khupase](https://github.com/ronit-khupase)
 
-## 📌 Future Improvements
+---
 
-- Add input validation using Jakarta Bean Validation.
-- Implement centralized exception handling.
-- Improve HTTP status codes and API responses.
-- Add unit and integration tests.
-- Implement authentication and authorization using Spring Security.
+Developed as a hands-on project to strengthen Java backend development skills using Spring Boot, REST APIs, DTOs, validation, and PostgreSQL.

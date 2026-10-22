@@ -1,9 +1,13 @@
 package com.practice.student.service;
 
+import com.practice.student.dto.StudentReqDto;
+import com.practice.student.dto.StudentResDto;
 import com.practice.student.entity.Student;
 import com.practice.student.repository.StudentRepository;
+import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,20 +21,33 @@ public class StudentService {
     }
 
 
-    public Student createStudent(Student studentReq){
-        studentReq.setDeleted(false);
-        return studentRepository.save(studentReq);
+    public StudentResDto createStudent(StudentReqDto studentReq){
+        Student student = mapToEntity(studentReq);
+
+        Student studentRes = studentRepository.save(student);
+
+        return mapToDto(studentRes);
     }
 
-    public Optional<Student> getStudent(Long id){
-        return studentRepository.findByIdAndIsDeletedFalse(id);
+    public StudentResDto getStudent(Long id){
+        Optional<Student> student = studentRepository.findByIdAndIsDeletedFalse(id);
+
+        return student.map(this::mapToDto).orElse(null);
+
     }
 
-    public List<Student> getAllStudents(){
-        return studentRepository.findByIsDeletedFalse();
+    public List<StudentResDto> getAllStudents(){
+
+        List<StudentResDto> studentRes = new ArrayList<>();
+
+        for(Student student : studentRepository.findByIsDeletedFalse()){
+            studentRes.add(mapToDto(student));
+        }
+
+        return studentRes;
     }
 
-    public Student updateStudent(Long id, Student student){
+    public StudentResDto updateStudent(Long id, StudentReqDto studentReqDto){
 
         Optional<Student> existedStudent = studentRepository.findByIdAndIsDeletedFalse(id);
 
@@ -40,13 +57,12 @@ public class StudentService {
 
         Student studentToSave = existedStudent.get();
 
-        studentToSave.setName(student.getName());
-        studentToSave.setAge(student.getAge());
-        studentToSave.setEmail(student.getEmail());
-        studentToSave.setSubject(student.getSubject());
-        studentToSave.setDeleted(false);
+        studentToSave.setName(studentReqDto.getName());
+        studentToSave.setAge(studentReqDto.getAge());
+        studentToSave.setEmail(studentReqDto.getEmail());
+        studentToSave.setSubject(studentReqDto.getSubject());
 
-        return studentRepository.save(studentToSave);
+        return mapToDto(studentRepository.save(studentToSave));
     }
 
     public boolean deleteStudent(Long id) {
@@ -64,7 +80,7 @@ public class StudentService {
 
     public boolean deleteSoftly(Long id){
 
-        Optional<Student> student = studentRepository.findById(id);
+        Optional<Student> student = studentRepository.findByIdAndIsDeletedFalse(id);
 
         if(student.isEmpty()){
             return false;
@@ -75,5 +91,27 @@ public class StudentService {
         studentRepository.save(studentToSave);
 
         return true;
+    }
+
+    public Student mapToEntity(StudentReqDto studentReqDto){
+        Student student = new Student();
+        student.setName(studentReqDto.getName());
+        student.setEmail(studentReqDto.getEmail());
+        student.setAge(studentReqDto.getAge());
+        student.setSubject(studentReqDto.getSubject());
+        student.setDeleted(false);
+
+        return student;
+    }
+
+    public StudentResDto mapToDto(Student student){
+        StudentResDto studentResDto = new StudentResDto();
+        studentResDto.setName(student.getName());
+        studentResDto.setEmail(student.getEmail());
+        studentResDto.setAge(student.getAge());
+        studentResDto.setSubject(student.getSubject());
+        studentResDto.setId(student.getId());
+
+        return studentResDto;
     }
 }

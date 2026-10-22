@@ -1,5 +1,7 @@
 package com.practice.student.controller;
 
+import com.practice.student.dto.StudentReqDto;
+import com.practice.student.dto.StudentResDto;
 import com.practice.student.entity.Student;
 import com.practice.student.service.StudentService;
 import org.springframework.http.ResponseEntity;
@@ -19,40 +21,43 @@ public class StudentController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Student> createStudent(@RequestBody Student studentReq){
+    public ResponseEntity<StudentResDto> createStudent(@RequestBody StudentReqDto studentReq){
 
-        Student studentRes = studentService.createStudent(studentReq);
+        StudentResDto studentResDto = studentService.createStudent(studentReq);
 
-        return ResponseEntity.status(201).body(studentRes);
+        return ResponseEntity.status(201).body(studentResDto);
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Student> getStudent(@PathVariable Long id){
+    public ResponseEntity<StudentResDto> getStudent(@PathVariable Long id){
 
-        Optional<Student> studentRes = studentService.getStudent(id);
+        StudentResDto studentResDto = studentService.getStudent(id);
 
-        return studentRes.map(student -> ResponseEntity.status(200).body(student)).orElseGet(() -> ResponseEntity.status(404).body(null));
+        if (studentResDto == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.status(200).body(studentResDto);
     }
 
     @GetMapping("/get")
-    public ResponseEntity<List<Student>> getAllStudents(){
+    public ResponseEntity<List<StudentResDto>> getAllStudents(){
 
-        List<Student> students = studentService.getAllStudents();
+        List<StudentResDto> students = studentService.getAllStudents();
 
         return ResponseEntity.status(200).body(students);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Student> updateStudent(@PathVariable Long id,
-                                                 @RequestBody Student studentReq){
+    public ResponseEntity<StudentResDto> updateStudent(@PathVariable Long id,
+                                                 @RequestBody StudentReqDto studentReqDto){
 
-        Student studentRes = studentService.updateStudent(id, studentReq);
+        StudentResDto studentResDto = studentService.updateStudent(id, studentReqDto);
 
-        if(studentReq == null){
+        if(studentResDto == null){
             return ResponseEntity.status(404).body(null);
         }
 
-        return ResponseEntity.status(200).body(studentRes);
+        return ResponseEntity.status(200).body(studentResDto);
     }
 
     @DeleteMapping("/delete/{id}")
